@@ -34,6 +34,7 @@ No describas al cliente con calificativos personales. Traducí las necesidades d
 - Los gráficos siempre incluyen leyenda, valores o resumen textual; el color nunca es la única señal.
 - Usar esqueletos con altura reservada para evitar saltos de layout.
 - Mantener navegación, filtros y KPIs consistentes en todas las secciones.
+- Los KPIs e insights del Resumen funcionan como accesos de drill-down: deben ser botones semánticos, mostrar una señal visual de apertura y navegar al módulo que explica su cifra sin perder el período seleccionado.
 - Reutilizar `components/dashboard/finance-ui.tsx` para métricas, insights y superficies bento; no duplicar estos patrones dentro de cada página.
 - La interfaz visible se escribe en español, los importes son USD y la zona horaria es `America/New_York`.
 

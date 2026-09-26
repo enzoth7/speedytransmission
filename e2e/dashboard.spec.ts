@@ -5,8 +5,7 @@ test("recorre las secciones principales y filtra el período", async ({ page, is
   await expect(page.getByRole("heading", { name: "El negocio, en números" })).toBeVisible();
   await expect(page.getByText("Utilidad neta")).toBeVisible();
 
-  if (isMobile) await page.getByRole("button", { name: "Abrir menú" }).click();
-  await page.getByRole("button", { name: "Ingresos" }).click();
+  await page.getByRole("button", { name: "Abrir detalle de ingresos" }).click();
   await expect(page.getByRole("heading", { name: "Qué está generando dinero" })).toBeVisible();
 
   await page.getByLabel("Período").selectOption("month");
@@ -36,8 +35,18 @@ test("la navegación móvil no produce scroll horizontal", async ({ page, isMobi
   test.skip(!isMobile, "Chequeo específico para viewport móvil");
   await page.goto("/");
   await page.getByRole("button", { name: "Abrir menú" }).click();
-  await page.getByRole("button", { name: "Flujo de caja" }).click();
+  await page.getByRole("button", { name: "Flujo de caja", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Caja real y próxima decisión" })).toBeVisible();
   const widths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(widths.scroll).toBeLessThanOrEqual(widths.client + 1);
+});
+
+test("los KPIs permiten drill-down con teclado", async ({ page }) => {
+  await page.goto("/");
+  const purchasesKpi = page.getByRole("button", { name: "Abrir detalle de compras" });
+  await purchasesKpi.focus();
+  await expect(purchasesKpi).toBeFocused();
+  await purchasesKpi.press("Enter");
+  await expect(page.getByRole("heading", { name: "Control de compras y repuestos" })).toBeVisible();
+  await expect(page).toHaveURL(/#compras$/);
 });

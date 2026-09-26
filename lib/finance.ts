@@ -138,10 +138,10 @@ export function waterfallData(snapshot: FinancialSnapshot) {
   ];
   let running = 0;
   return points.map((point, index) => {
-    if (index === points.length - 1) return { ...point, base: 0, display: point.value };
+    if (index === points.length - 1) return { ...point, start: 0, end: point.value, base: Math.min(0, point.value), display: Math.abs(point.value) };
     const start = running;
     running += point.value;
-    return { ...point, base: Math.min(start, running), display: Math.abs(point.value) };
+    return { ...point, start, end: running, base: Math.min(start, running), display: Math.abs(point.value) };
   });
 }
 

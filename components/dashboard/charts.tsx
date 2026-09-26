@@ -7,6 +7,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  LabelList,
   Legend,
   Line,
   LineChart,
@@ -92,23 +93,48 @@ export function CashAreaChart({ data }: { data: { date: string; balance: number;
   );
 }
 
-export function WaterfallChart({ data }: { data: { name: string; value: number; base: number; display: number; kind: string }[] }) {
+type WaterfallPoint = {
+  name: string;
+  value: number;
+  base: number;
+  display: number;
+  kind: string;
+  start: number;
+  end: number;
+};
+
+export function WaterfallChart({ data }: { data: WaterfallPoint[] }) {
+  const comparison = data.map((item) => ({
+    ...item,
+    label: item.name === "Repuestos y mano de obra" ? "Costos directos" : item.name,
+    axisLabel: item.name === "Repuestos y mano de obra" ? "Repuestos" : item.name === "Gastos operativos" ? "Gastos" : item.name,
+    amount: Math.abs(item.value),
+  }));
+
   return (
-    <div role="img" aria-label="Formación de la utilidad desde ingresos, costos directos y gastos operativos" className="h-[310px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 8, right: 12, left: -4, bottom: 8 }}>
-          <CartesianGrid stroke="#E8EEF5" strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="name" interval={0} angle={-12} textAnchor="end" height={62} {...axisProps} />
-          <YAxis tickFormatter={(value) => formatCurrency(Number(value), true)} width={64} {...axisProps} />
-          <Tooltip contentStyle={tooltipStyle} formatter={(_value, _name, item) => formatCurrency(Number(item.payload.value))} />
-          <Bar dataKey="base" stackId="waterfall" fill="transparent" />
-          <Bar dataKey="display" stackId="waterfall" radius={[7, 7, 0, 0]}>
-            {data.map((item) => (
-              <Cell key={item.name} fill={item.kind === "negative" ? "#C90301" : item.kind === "total" ? "#15803D" : "#00307B"} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+    <div role="img" aria-label="Comparación desde cero de ingresos, costos directos, gastos operativos y utilidad" className="w-full">
+      <div className="h-[300px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={comparison} margin={{ top: 30, right: 12, left: -4, bottom: 10 }}>
+            <CartesianGrid stroke="#E8EEF5" strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="axisLabel" interval={0} padding={{ left: 12, right: 12 }} {...axisProps} tick={{ fill: "#4F5F75", fontSize: 10 }} />
+            <YAxis domain={[0, "auto"]} tickFormatter={(value) => formatCurrency(Number(value), true)} width={68} {...axisProps} />
+            <Tooltip contentStyle={tooltipStyle} formatter={(value) => formatCurrency(Number(value))} />
+            <Bar dataKey="amount" name="Importe" radius={[8, 8, 0, 0]} maxBarSize={112}>
+              {comparison.map((item) => <Cell key={item.name} fill={item.kind === "negative" ? "#C90301" : item.kind === "total" ? "#15803D" : "#00307B"} />)}
+              <LabelList dataKey="amount" position="top" formatter={(value) => formatCurrency(Number(value), true)} style={{ fill: "#243247", fontSize: 11, fontWeight: 700, fontFamily: "var(--font-poppins)" }} />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+      <dl className="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {comparison.map((item) => (
+          <div key={item.name} className="rounded-xl border border-[#E1E8F0] bg-[#F8FAFC] px-3 py-2.5">
+            <dt className="text-xs font-medium text-[#66748A]">{item.label}</dt>
+            <dd className={item.kind === "negative" ? "mt-1 text-sm font-bold text-[#B42318]" : item.kind === "total" ? "mt-1 text-sm font-bold text-[#15803D]" : "mt-1 text-sm font-bold text-[#00307B]"}>{item.kind === "negative" ? "−" : item.kind === "total" ? "=" : "+"} {formatCurrency(Math.abs(item.value))}</dd>
+          </div>
+        ))}
+      </dl>
     </div>
   );
 }

@@ -15,7 +15,7 @@ describe("dashboard", () => {
     render(<DashboardApp />);
     expect(await screen.findByText("El negocio, en números")).toBeInTheDocument();
     expect(screen.getByText("Utilidad neta")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Ingresos" }));
+    await user.click(screen.getByRole("button", { name: "Abrir detalle de ingresos" }));
     expect(await screen.findByText("Qué está generando dinero")).toBeInTheDocument();
     expect(window.location.hash).toBe("#ingresos");
   });
@@ -39,5 +39,16 @@ describe("dashboard", () => {
     await user.click(screen.getByRole("button", { name: "Autos en depósito" }));
     expect(await screen.findByRole("heading", { name: "Autos inmovilizados en el depósito" })).toBeInTheDocument();
     expect(screen.getByText("Inventario del depósito")).toBeInTheDocument();
+  });
+
+  it("usa los KPIs del resumen como accesos a su detalle", async () => {
+    const user = userEvent.setup();
+    render(<DashboardApp />);
+    await screen.findByText("El negocio, en números");
+    await user.click(screen.getByRole("button", { name: "Abrir detalle de compras" }));
+    expect(await screen.findByRole("heading", { name: "Control de compras y repuestos" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Resumen" }));
+    await user.click(await screen.findByRole("button", { name: "Abrir autos en depósito" }));
+    expect(await screen.findByRole("heading", { name: "Autos inmovilizados en el depósito" })).toBeInTheDocument();
   });
 });

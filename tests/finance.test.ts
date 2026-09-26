@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getPeriod, getPreviousPeriod } from "@/lib/date";
-import { calculateSummary, netCash, operatingValues, partsControlSummary, storageSummary } from "@/lib/finance";
+import { calculateSummary, netCash, operatingValues, partsControlSummary, storageSummary, waterfallData } from "@/lib/finance";
 import { createMockDataset } from "@/lib/mock-data";
 import { MockFinancialDataProvider } from "@/lib/provider";
 
@@ -45,6 +45,10 @@ describe("modelo financiero", () => {
     const values = operatingValues(snapshot);
     expect(values.netProfit).toBe(values.revenue - values.directCosts - values.operatingExpenses);
     expect(values.operatingOutflow).toBe(values.directCosts + values.operatingExpenses);
+    const bridge = waterfallData(snapshot);
+    expect(bridge[1].start).toBe(bridge[0].end);
+    expect(bridge[2].start).toBe(bridge[1].end);
+    expect(bridge[3].end).toBe(values.netProfit);
   });
 
   it("reconcilia saldo de caja con todos los movimientos", () => {

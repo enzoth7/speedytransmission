@@ -204,7 +204,7 @@ function SectionHeading({ title, description, action }: { title: string; descrip
   );
 }
 
-function SummaryPage({ snapshot, summary }: { snapshot: FinancialSnapshot; summary: DashboardSummary }) {
+function SummaryPage({ snapshot, summary, onNavigate }: { snapshot: FinancialSnapshot; summary: DashboardSummary; onNavigate: (section: Section) => void }) {
   const monthly = monthlyMetrics(snapshot);
   const waterfall = waterfallData(snapshot);
   const parts = partsControlSummary(snapshot);
@@ -219,13 +219,13 @@ function SummaryPage({ snapshot, summary }: { snapshot: FinancialSnapshot; summa
       <SectionHeading
         title="El negocio, en números"
         description={`Resultado consolidado del ${formatDate(snapshot.period.start)} al ${formatDate(snapshot.period.end)}. Lo importante primero: rentabilidad, caja y cobros pendientes.`}
-        action={<Badge tone="brand">{summary.jobs} trabajos finalizados</Badge>}
+        action={<Button variant="secondary" size="sm" onClick={() => onNavigate("trabajos")}>{summary.jobs} trabajos finalizados<ChevronRight className="size-3.5" aria-hidden="true" /></Button>}
       />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-12">
-        <KpiCard className="xl:col-span-3" label="Compras de repuestos" value={formatCurrency(parts.total)} icon={ShoppingCart} detail={`${parts.purchases} líneas vinculadas a órdenes`} accent="red" />
-        <KpiCard className="xl:col-span-3" label="Plata inmovilizada en depósito" value={formatCurrency(yard.amountDue)} icon={Warehouse} detail={`${yard.vehicles} autos · ${yard.criticalVehicles} requieren acción`} accent="yellow" />
-        <KpiCard className="xl:col-span-3" label="Ingresos" value={formatCurrency(summary.revenue)} icon={DollarSign} trend={summary.comparisons.revenue} />
-        <KpiCard className="xl:col-span-3" label="Utilidad neta" value={formatCurrency(summary.netProfit)} icon={TrendingUp} trend={summary.comparisons.netProfit} accent="green" />
+        <KpiCard className="xl:col-span-3" label="Compras de repuestos" value={formatCurrency(parts.total)} icon={ShoppingCart} detail={`${parts.purchases} líneas vinculadas a órdenes`} accent="red" onClick={() => onNavigate("compras")} actionLabel="Abrir detalle de compras" />
+        <KpiCard className="xl:col-span-3" label="Plata inmovilizada en depósito" value={formatCurrency(yard.amountDue)} icon={Warehouse} detail={`${yard.vehicles} autos · ${yard.criticalVehicles} requieren acción`} accent="yellow" onClick={() => onNavigate("deposito")} actionLabel="Abrir autos en depósito" />
+        <KpiCard className="xl:col-span-3" label="Ingresos" value={formatCurrency(summary.revenue)} icon={DollarSign} trend={summary.comparisons.revenue} onClick={() => onNavigate("ingresos")} actionLabel="Abrir detalle de ingresos" />
+        <KpiCard className="xl:col-span-3" label="Utilidad neta" value={formatCurrency(summary.netProfit)} icon={TrendingUp} trend={summary.comparisons.netProfit} accent="green" onClick={() => onNavigate("ingresos")} actionLabel="Abrir análisis de utilidad" />
 
         <BentoSurface className="min-w-0 sm:col-span-2 xl:col-span-8">
           <CardHeader>
@@ -239,13 +239,13 @@ function SummaryPage({ snapshot, summary }: { snapshot: FinancialSnapshot; summa
         </BentoSurface>
 
         <div className="grid gap-3 sm:col-span-2 sm:grid-cols-2 xl:col-span-4 xl:grid-cols-2">
-          <KpiCard className="sm:col-span-2" label="Caja disponible" value={formatCurrency(summary.closingCash)} icon={PiggyBank} trend={summary.comparisons.closingCash} accent="dark" />
-          <CompactInsight label="Por cobrar" value={formatCurrency(summary.receivables)} detail={`${overdue.length} facturas vencidas requieren seguimiento`} icon={CircleDollarSign} tone="yellow" />
-          <CompactInsight label="Ticket promedio" value={formatCurrency(summary.averageTicket)} detail={`${summary.jobs} órdenes completadas`} icon={ClipboardList} tone="blue" />
+          <KpiCard className="sm:col-span-2" label="Caja disponible" value={formatCurrency(summary.closingCash)} icon={PiggyBank} trend={summary.comparisons.closingCash} accent="dark" onClick={() => onNavigate("flujo")} actionLabel="Abrir flujo de caja" />
+          <CompactInsight label="Por cobrar" value={formatCurrency(summary.receivables)} detail={`${overdue.length} facturas vencidas requieren seguimiento`} icon={CircleDollarSign} tone="yellow" onClick={() => onNavigate("ingresos")} actionLabel="Abrir cuentas por cobrar" />
+          <CompactInsight label="Ticket promedio" value={formatCurrency(summary.averageTicket)} detail={`${summary.jobs} órdenes completadas`} icon={ClipboardList} tone="blue" onClick={() => onNavigate("trabajos")} actionLabel="Abrir trabajos del período" />
         </div>
 
         <BentoSurface className="min-w-0 sm:col-span-2 xl:col-span-7">
-          <CardHeader><div><CardTitle>Cómo se forma la utilidad</CardTitle><CardDescription>Del ingreso bruto al resultado operativo.</CardDescription></div></CardHeader>
+          <CardHeader><div><CardTitle>Ingresos, costos y utilidad</CardTitle><CardDescription>Comparación directa: todas las columnas parten desde cero.</CardDescription></div></CardHeader>
           <CardContent className="pt-3"><WaterfallChart data={waterfall} /></CardContent>
         </BentoSurface>
 
@@ -255,9 +255,9 @@ function SummaryPage({ snapshot, summary }: { snapshot: FinancialSnapshot; summa
             <CardDescription>Los puntos que conviene revisar primero.</CardDescription>
           </div>
           <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-1">
-            <CompactInsight label="Proveedor con más compras" value={purchaseVendors[0]?.name ?? "Sin datos"} detail={purchaseVendors[0] ? `${formatCurrency(purchaseVendors[0].amount)} en repuestos` : "No hay compras registradas"} icon={PackageSearch} tone="red" />
-            <CompactInsight label="Auto más antiguo en depósito" value={oldestVehicle?.vehicle ?? "Sin autos"} detail={oldestVehicle ? `Desde ${formatDate(oldestVehicle.arrivedAt)} · ${formatCurrency(oldestVehicle.amountDue)} por recuperar` : "No hay unidades inmovilizadas"} icon={CarFront} tone="yellow" />
-            <CompactInsight label="Mayor gasto fijo" value={largestExpense?.name ?? "Sin datos"} detail={largestExpense ? `${formatCurrency(largestExpense.amount)} en el período` : "No hay gastos registrados"} icon={AlertTriangle} tone="red" className="sm:col-span-2 xl:col-span-1" />
+            <CompactInsight label="Proveedor con más compras" value={purchaseVendors[0]?.name ?? "Sin datos"} detail={purchaseVendors[0] ? `${formatCurrency(purchaseVendors[0].amount)} en repuestos` : "No hay compras registradas"} icon={PackageSearch} tone="red" onClick={() => onNavigate("compras")} actionLabel="Abrir compras por proveedor" />
+            <CompactInsight label="Auto más antiguo en depósito" value={oldestVehicle?.vehicle ?? "Sin autos"} detail={oldestVehicle ? `Desde ${formatDate(oldestVehicle.arrivedAt)} · ${formatCurrency(oldestVehicle.amountDue)} por recuperar` : "No hay unidades inmovilizadas"} icon={CarFront} tone="yellow" onClick={() => onNavigate("deposito")} actionLabel="Abrir auto más antiguo en depósito" />
+            <CompactInsight label="Mayor gasto fijo" value={largestExpense?.name ?? "Sin datos"} detail={largestExpense ? `${formatCurrency(largestExpense.amount)} en el período` : "No hay gastos registrados"} icon={AlertTriangle} tone="red" className="sm:col-span-2 xl:col-span-1" onClick={() => onNavigate("gastos")} actionLabel="Abrir detalle de gastos" />
           </div>
         </BentoSurface>
       </div>
@@ -629,7 +629,7 @@ export function DashboardApp() {
         <main id="main-content" tabIndex={-1} className="dashboard-grid mx-auto max-w-[1700px] px-4 py-6 outline-none md:px-6 xl:px-8 xl:py-7">
           {!snapshot || !summary ? <DashboardSkeleton /> : snapshot.repairOrders.length === 0 && section !== "inversiones" && section !== "deposito" ? <EmptyState /> : (
             <>
-              {section === "resumen" && <SummaryPage snapshot={snapshot} summary={summary} />}
+              {section === "resumen" && <SummaryPage snapshot={snapshot} summary={summary} onNavigate={navigate} />}
               {section === "compras" && <PurchasesPage snapshot={snapshot} />}
               {section === "deposito" && <StoragePage snapshot={snapshot} />}
               {section === "ingresos" && <IncomePage snapshot={snapshot} summary={summary} />}
