@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Oswald, Poppins } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -24,7 +25,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
-      <body className={`${poppins.variable} ${oswald.variable}`}>{children}</body>
+      <body className={`${poppins.variable} ${oswald.variable}`}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
