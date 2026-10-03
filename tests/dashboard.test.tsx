@@ -10,45 +10,45 @@ describe("dashboard", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it("muestra KPIs ejecutivos y permite navegar", async () => {
+  it("shows executive KPIs and supports navigation", async () => {
     const user = userEvent.setup();
     render(<DashboardApp />);
-    expect(await screen.findByText("El negocio, en números")).toBeInTheDocument();
-    expect(screen.getByText("Utilidad neta")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Abrir detalle de ingresos" }));
-    expect(await screen.findByText("Qué está generando dinero")).toBeInTheDocument();
-    expect(window.location.hash).toBe("#ingresos");
+    expect(await screen.findByText("Speedy's Finance")).toBeInTheDocument();
+    expect(screen.getByText("Estimated profit")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Open revenue details" }));
+    expect(await screen.findByText("What is generating revenue")).toBeInTheDocument();
+    expect(window.location.hash).toBe("#revenue");
   });
 
-  it("cambia el período y conserva datos válidos", async () => {
+  it("changes the period and keeps valid data", async () => {
     const user = userEvent.setup();
     render(<DashboardApp />);
-    await screen.findByText("El negocio, en números");
-    await user.selectOptions(screen.getByLabelText("Período"), "month");
-    await waitFor(() => expect(screen.getByText("El negocio, en números")).toBeInTheDocument());
-    expect(screen.getByText(/trabajos finalizados/)).toBeInTheDocument();
+    await screen.findByText("Speedy's Finance");
+    await user.selectOptions(screen.getByLabelText("Period"), "month");
+    await waitFor(() => expect(screen.getByText("Speedy's Finance")).toBeInTheDocument());
+    expect(screen.getByText(/completed jobs/)).toBeInTheDocument();
   });
 
-  it("expone la trazabilidad de compras y el inventario del depósito", async () => {
+  it("shows purchase traceability and storage inventory", async () => {
     const user = userEvent.setup();
     render(<DashboardApp />);
-    await screen.findByText("El negocio, en números");
-    await user.click(screen.getByRole("button", { name: "Compras" }));
-    expect(await screen.findByRole("heading", { name: "Control de compras y repuestos" })).toBeInTheDocument();
-    expect(screen.getByText("Detalle de cada compra")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Autos en depósito" }));
-    expect(await screen.findByRole("heading", { name: "Autos inmovilizados en el depósito" })).toBeInTheDocument();
-    expect(screen.getByText("Inventario del depósito")).toBeInTheDocument();
+    await screen.findByText("Speedy's Finance");
+    await user.click(screen.getByRole("button", { name: "Parts Purchases" }));
+    expect(await screen.findByRole("heading", { name: "Parts purchasing control" })).toBeInTheDocument();
+    expect(screen.getByText("Purchase details")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Vehicle Storage" }));
+    expect(await screen.findByRole("heading", { name: "Vehicles held in storage" })).toBeInTheDocument();
+    expect(screen.getByText("Storage inventory")).toBeInTheDocument();
   });
 
-  it("usa los KPIs del resumen como accesos a su detalle", async () => {
+  it("uses dashboard KPIs as drill-down controls", async () => {
     const user = userEvent.setup();
     render(<DashboardApp />);
-    await screen.findByText("El negocio, en números");
-    await user.click(screen.getByRole("button", { name: "Abrir detalle de compras" }));
-    expect(await screen.findByRole("heading", { name: "Control de compras y repuestos" })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Resumen" }));
-    await user.click(await screen.findByRole("button", { name: "Abrir autos en depósito" }));
-    expect(await screen.findByRole("heading", { name: "Autos inmovilizados en el depósito" })).toBeInTheDocument();
+    await screen.findByText("Speedy's Finance");
+    await user.click(screen.getByRole("button", { name: "Open parts purchases" }));
+    expect(await screen.findByRole("heading", { name: "Parts purchasing control" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Dashboard" }));
+    await user.click(await screen.findByRole("button", { name: "Open vehicle storage" }));
+    expect(await screen.findByRole("heading", { name: "Vehicles held in storage" })).toBeInTheDocument();
   });
 });

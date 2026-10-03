@@ -131,10 +131,10 @@ export function cashSeries(snapshot: FinancialSnapshot) {
 export function waterfallData(snapshot: FinancialSnapshot) {
   const values = operatingValues(snapshot);
   const points = [
-    { name: "Ingresos", value: values.revenue, kind: "positive" },
-    { name: "Repuestos y mano de obra", value: -values.directCosts, kind: "negative" },
-    { name: "Gastos operativos", value: -values.operatingExpenses, kind: "negative" },
-    { name: "Utilidad", value: values.netProfit, kind: "total" },
+    { name: "Revenue", value: values.revenue, kind: "positive" },
+    { name: "Parts and labor", value: -values.directCosts, kind: "negative" },
+    { name: "Operating expenses", value: -values.operatingExpenses, kind: "negative" },
+    { name: "Profit", value: values.netProfit, kind: "total" },
   ];
   let running = 0;
   return points.map((point, index) => {

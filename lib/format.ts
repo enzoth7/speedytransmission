@@ -1,5 +1,5 @@
 export const formatCurrency = (value: number, compact = false, decimals = 0) =>
-  new Intl.NumberFormat("es-UY", {
+  new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     notation: compact ? "compact" : "standard",
@@ -8,12 +8,12 @@ export const formatCurrency = (value: number, compact = false, decimals = 0) =>
   }).format(value);
 
 export const formatPercent = (value: number) =>
-  new Intl.NumberFormat("es-UY", { style: "percent", maximumFractionDigits: 1 }).format(value / 100);
+  new Intl.NumberFormat("en-US", { style: "percent", maximumFractionDigits: 1 }).format(value / 100);
 
 export const formatDate = (date: string) =>
-  new Intl.DateTimeFormat("es-UY", {
+  new Intl.DateTimeFormat("en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",
-    timeZone: "UTC",
+    timeZone: "America/New_York",
   }).format(new Date(`${date}T12:00:00Z`));

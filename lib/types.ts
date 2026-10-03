@@ -26,7 +26,7 @@ export interface RepairOrder {
   id: string;
   date: string;
   customer: string;
-  customerType: "Particular" | "Flota";
+  customerType: "Retail" | "Fleet";
   vehicle: string;
   service: string;
   revenue: number;

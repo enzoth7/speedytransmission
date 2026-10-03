@@ -9,11 +9,11 @@ export function getPeriod(preset: PeriodPreset, customStart?: string, customEnd?
   const year = today.getUTCFullYear();
   const month = today.getUTCMonth();
   const labels: Record<PeriodPreset, string> = {
-    month: "Este mes",
-    quarter: "Este trimestre",
-    ytd: "Año a la fecha",
-    "12m": "Últimos 12 meses",
-    custom: "Rango personalizado",
+    month: "This month",
+    quarter: "This quarter",
+    ytd: "Year to date",
+    "12m": "Last 12 months",
+    custom: "Custom range",
   };
 
   let start: Date;
@@ -38,7 +38,7 @@ export function getPreviousPeriod(period: FinancialPeriod): FinancialPeriod {
   return {
     start: toIso(previousStart),
     end: toIso(previousEnd),
-    label: "Período anterior",
+    label: "Previous period",
     preset: "custom",
   };
 }
@@ -59,7 +59,6 @@ export function monthKey(date: string) {
 
 export function monthLabel(key: string) {
   const [year, month] = key.split("-").map(Number);
-  return new Intl.DateTimeFormat("es-UY", { month: "short", year: "2-digit", timeZone: "UTC" })
-    .format(new Date(Date.UTC(year, month - 1, 1)))
-    .replace(" de ", " ’");
+  return new Intl.DateTimeFormat("en-US", { month: "short", year: "2-digit", timeZone: "UTC" })
+    .format(new Date(Date.UTC(year, month - 1, 1)));
 }

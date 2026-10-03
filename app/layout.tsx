@@ -19,12 +19,12 @@ const oswald = Oswald({
 
 export const metadata: Metadata = {
   title: "Speedy's | Financial Command Center",
-  description: "Dashboard financiero ejecutivo para Speedy's Transmission and Auto Repair.",
+  description: "Executive financial dashboard for Speedy's Transmission and Auto Repair.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es">
+    <html lang="en">
       <body className={`${poppins.variable} ${oswald.variable}`}>
         {children}
         <Analytics />

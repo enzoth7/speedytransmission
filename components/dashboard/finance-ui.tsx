@@ -9,24 +9,24 @@ type Accent = "blue" | "green" | "red" | "yellow" | "dark";
 
 const accentStyles: Record<Accent, { icon: string; value: string; surface: string }> = {
   blue: {
-    icon: "bg-[#EAF1FB] text-[#00307B]",
+    icon: "bg-[#DDF6F7] text-[#078D98]",
     value: "text-[#10213A]",
     surface: "bg-white",
   },
   green: {
-    icon: "bg-[#E8F5EC] text-[#15803D]",
+    icon: "bg-[#E5F6EC] text-[#15803D]",
     value: "text-[#10213A]",
     surface: "bg-white",
   },
   red: {
-    icon: "bg-[#FDECEB] text-[#C90301]",
+    icon: "bg-[#FDECEC] text-[#C90301]",
     value: "text-[#10213A]",
     surface: "bg-white",
   },
   yellow: {
-    icon: "bg-[#FFF3C7] text-[#705000]",
+    icon: "bg-[#FFF2C8] text-[#765600]",
     value: "text-[#10213A]",
-    surface: "bg-[#FFF9E8]",
+    surface: "bg-white",
   },
   dark: {
     icon: "bg-white/10 text-white",
@@ -42,7 +42,7 @@ export function TrendValue({ value, inverse = false, dark = false }: { value: nu
     <div className={cn("inline-flex items-center gap-1.5 text-xs font-bold", favorable ? (dark ? "text-[#70D394]" : "text-[#15803D]") : "text-[#D43A36]") }>
       <Icon className="size-3.5" aria-hidden="true" />
       {Math.abs(value).toFixed(1)}%
-      <small className={cn("font-medium", dark ? "text-[#AFBED0]" : "text-[#738096]")}>vs. período anterior</small>
+      <small className={cn("font-medium", dark ? "text-[#AFBED0]" : "text-[#738096]")}>vs. previous period</small>
     </div>
   );
 }
@@ -75,17 +75,17 @@ export function MetricCard({
   const dark = accent === "dark";
 
   const content = (
-    <div className="flex h-full min-h-[146px] flex-col justify-between p-5">
+    <div className="flex h-full min-h-[132px] flex-col justify-between p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className={cn("text-xs font-semibold text-[#66748A]", dark && "text-[#B7C4D4]")}>{label}</div>
-          <output className={cn("mt-2 block truncate text-[1.65rem] font-bold leading-none tracking-[-0.035em] 2xl:text-[1.85rem]", styles.value)}>{value}</output>
+          <output className={cn("mt-2 block truncate text-[1.6rem] font-bold leading-none tracking-[-0.035em] 2xl:text-[1.8rem]", styles.value)}>{value}</output>
         </div>
-        <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-[1.04]", styles.icon)}>
+        <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-full transition-colors duration-200", styles.icon)}>
           <Icon className="size-5" aria-hidden="true" />
         </div>
       </div>
-      <div className="mt-5 flex min-h-7 items-end justify-between gap-2">
+      <div className="mt-4 flex min-h-6 items-end justify-between gap-2">
         <div className="min-w-0">
           {trend !== undefined ? <TrendValue value={trend} inverse={inverse} dark={dark} /> : <div className={cn("text-xs font-medium text-[#738096]", dark && "text-[#AFBED0]")}>{detail}</div>}
         </div>
@@ -95,7 +95,7 @@ export function MetricCard({
   );
 
   const shellClass = cn(
-    "group min-w-0 overflow-hidden rounded-[22px] border border-[#DDE5EE] text-left shadow-[0_1px_2px_rgba(15,23,42,0.035)] transition-[border-color,box-shadow] duration-200 hover:border-[#C6D2DF] hover:shadow-[0_14px_34px_rgba(15,23,42,0.08)]",
+    "group min-w-0 overflow-hidden rounded-xl border border-[#D9E2EC] text-left shadow-[0_1px_3px_rgba(15,23,42,0.05)] transition-[border-color,box-shadow] duration-200 hover:border-[#BFCEDA] hover:shadow-[0_8px_20px_rgba(15,23,42,0.07)]",
     styles.surface,
     onClick && "w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00307B] focus-visible:ring-offset-2 active:scale-[0.995]",
     className,
@@ -105,8 +105,8 @@ export function MetricCard({
     <motion.button
       type="button"
       onClick={onClick}
-      aria-label={actionLabel ?? `Abrir detalle de ${label.toLowerCase()}`}
-      whileHover={reduceMotion ? undefined : { y: -3 }}
+      aria-label={actionLabel ?? `Open ${label.toLowerCase()} details`}
+      whileHover={reduceMotion ? undefined : { y: -1 }}
       whileTap={reduceMotion ? undefined : { scale: 0.995 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
       className={shellClass}
@@ -117,7 +117,7 @@ export function MetricCard({
 
   return (
     <motion.div
-      whileHover={reduceMotion ? undefined : { y: -3 }}
+      whileHover={reduceMotion ? undefined : { y: -1 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
       className={shellClass}
     >
@@ -148,7 +148,7 @@ export function CompactInsight({
   const styles = accentStyles[tone];
   const content = (
       <div className="flex items-start gap-3 p-4">
-        <div className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", styles.icon)}>
+        <div className={cn("flex size-9 shrink-0 items-center justify-center rounded-full", styles.icon)}>
           <Icon className="size-[18px]" aria-hidden="true" />
         </div>
         <div className="min-w-0">
@@ -160,12 +160,12 @@ export function CompactInsight({
       </div>
   );
   const shellClass = cn(
-    "group relative rounded-[20px] border border-[#DDE5EE] bg-white text-left transition-[border-color,box-shadow,transform] duration-200 hover:border-[#C6D2DF] hover:shadow-[0_10px_24px_rgba(15,23,42,0.07)]",
+    "group relative rounded-xl border border-[#DDE5EE] bg-white text-left transition-[border-color,box-shadow,transform] duration-200 hover:border-[#C6D2DF] hover:shadow-[0_8px_20px_rgba(15,23,42,0.06)]",
     onClick && "w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00307B] focus-visible:ring-offset-2 active:scale-[0.995]",
     className,
   );
   if (onClick) return (
-    <button type="button" onClick={onClick} aria-label={actionLabel ?? `Abrir detalle de ${label.toLowerCase()}`} className={shellClass}>
+    <button type="button" onClick={onClick} aria-label={actionLabel ?? `Open ${label.toLowerCase()} details`} className={shellClass}>
       {content}
     </button>
   );
@@ -177,5 +177,5 @@ export function CompactInsight({
 }
 
 export function BentoSurface({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("rounded-[22px] border border-[#DDE5EE] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.035)]", className)}>{children}</div>;
+  return <div className={cn("rounded-xl border border-[#D9E2EC] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.05)]", className)}>{children}</div>;
 }

@@ -31,25 +31,25 @@ const vehicles = [
 ];
 
 const vendorByCategory: Record<string, string> = {
-  Alquiler: "Midlothian Properties LLC",
-  "Servicios públicos": "Dominion Energy & City Utilities",
-  Seguros: "Virginia Auto Business Insurance",
+  Rent: "Midlothian Properties LLC",
+  Utilities: "Dominion Energy & City Utilities",
+  Insurance: "Virginia Auto Business Insurance",
   Marketing: "Richmond Growth Media",
-  "Software y administración": "Shop Systems & Office",
-  "Grúas y logística": "Central VA Towing Network",
-  "Insumos del taller": "NAPA Auto Parts",
-  "Honorarios profesionales": "Harrison Accounting Group",
+  "Software and administration": "Shop Systems & Office",
+  "Towing and logistics": "Central VA Towing Network",
+  "Shop supplies": "NAPA Auto Parts",
+  "Professional fees": "Harrison Accounting Group",
 };
 
 const expenseBase: Record<string, number> = {
-  Alquiler: 8_900,
-  "Servicios públicos": 3_250,
-  Seguros: 4_100,
+  Rent: 8_900,
+  Utilities: 3_250,
+  Insurance: 4_100,
   Marketing: 5_400,
-  "Software y administración": 1_350,
-  "Grúas y logística": 4_300,
-  "Insumos del taller": 6_200,
-  "Honorarios profesionales": 2_300,
+  "Software and administration": 1_350,
+  "Towing and logistics": 4_300,
+  "Shop supplies": 6_200,
+  "Professional fees": 2_300,
 };
 
 function mulberry32(seed: number) {
@@ -90,7 +90,7 @@ export function createMockDataset(): FinancialDataset {
     for (let orderIndex = 0; orderIndex < orderCount; orderIndex += 1) {
       const serviceIndex = Math.floor(random() * SERVICE_CATALOG.length);
       const service = SERVICE_CATALOG[serviceIndex];
-      const isFleet = service.name.includes("flota") || random() < 0.2;
+      const isFleet = service.name.includes("fleet") || random() < 0.2;
       const date = `${month}-${String(2 + Math.floor(random() * (lastDay - 1))).padStart(2, "0")}`;
       const revenue = round(service.base * (0.82 + random() * 0.42) * growth * (isFleet ? 1.12 : 1));
       const partsCost = round(revenue * service.partsRatio * (0.92 + random() * 0.16));
@@ -104,7 +104,7 @@ export function createMockDataset(): FinancialDataset {
         id,
         date,
         customer,
-        customerType: isFleet ? "Flota" : "Particular",
+        customerType: isFleet ? "Fleet" : "Retail",
         vehicle: vehicles[(orderIndex + serviceIndex + monthIndex) % vehicles.length],
         service: service.name,
         revenue,
@@ -123,7 +123,7 @@ export function createMockDataset(): FinancialDataset {
           ? partsCost - allocatedParts
           : round(partsCost * purchaseWeights[partIndex]);
         allocatedParts += totalCost;
-        const quantity = partName.includes("Fluido") ? 8 : 1;
+        const quantity = partName.includes("fluid") ? 8 : 1;
         const purchaseStatus = pending && date >= "2026-09-15"
           ? (partIndex === 2 ? "ordered" : "received")
           : "installed";
@@ -149,8 +149,8 @@ export function createMockDataset(): FinancialDataset {
           date,
           type: "expense",
           amount: partsCost,
-          category: "Repuestos",
-          description: `Repuestos para ${id}`,
+          category: "Parts",
+          description: `Parts for ${id}`,
           relatedId: id,
         },
         {
@@ -158,8 +158,8 @@ export function createMockDataset(): FinancialDataset {
           date,
           type: "expense",
           amount: laborCost,
-          category: "Mano de obra directa",
-          description: `Mano de obra para ${id}`,
+          category: "Direct labor",
+          description: `Direct labor for ${id}`,
           relatedId: id,
         },
       );
@@ -171,7 +171,7 @@ export function createMockDataset(): FinancialDataset {
           type: "income",
           amount: revenue,
           category: service.name,
-          description: `Cobro ${id}`,
+          description: `Payment for ${id}`,
           paymentMethod,
           relatedId: id,
         });
@@ -197,7 +197,7 @@ export function createMockDataset(): FinancialDataset {
         date,
         category,
         vendor: vendorByCategory[category],
-        description: category === "Insumos del taller" ? "Consumibles, fluidos y herramientas menores" : `Gasto mensual de ${category.toLowerCase()}`,
+        description: category === "Shop supplies" ? "Consumables, fluids, and small tools" : `Monthly ${category.toLowerCase()} expense`,
         amount,
         recurring: categoryIndex < 5,
       };
@@ -215,12 +215,12 @@ export function createMockDataset(): FinancialDataset {
   });
 
   const investmentSeed: Investment[] = [
-    { id: "INV-001", date: "2025-05-14", category: "Equipamiento", description: "Elevador hidráulico de alta capacidad", amount: 24_800, expectedReturnMonths: 20, status: "active" },
-    { id: "INV-002", date: "2025-08-09", category: "Tecnología", description: "Escáner y estación de diagnóstico", amount: 16_400, expectedReturnMonths: 14, status: "active" },
-    { id: "INV-003", date: "2025-11-18", category: "Instalaciones", description: "Renovación del área de atención", amount: 11_900, expectedReturnMonths: 24, status: "completed" },
-    { id: "INV-004", date: "2026-02-12", category: "Equipamiento", description: "Lavadora industrial de piezas", amount: 19_600, expectedReturnMonths: 18, status: "active" },
-    { id: "INV-005", date: "2026-05-21", category: "Marketing estratégico", description: "Campaña regional para flotas comerciales", amount: 13_500, expectedReturnMonths: 8, status: "active" },
-    { id: "INV-006", date: "2026-08-07", category: "Tecnología", description: "Terminales y red del taller", amount: 9_800, expectedReturnMonths: 16, status: "active" },
+    { id: "INV-001", date: "2025-05-14", category: "Equipment", description: "High-capacity hydraulic lift", amount: 24_800, expectedReturnMonths: 20, status: "active" },
+    { id: "INV-002", date: "2025-08-09", category: "Technology", description: "Diagnostic scanner and workstation", amount: 16_400, expectedReturnMonths: 14, status: "active" },
+    { id: "INV-003", date: "2025-11-18", category: "Facilities", description: "Customer service area renovation", amount: 11_900, expectedReturnMonths: 24, status: "completed" },
+    { id: "INV-004", date: "2026-02-12", category: "Equipment", description: "Industrial parts washer", amount: 19_600, expectedReturnMonths: 18, status: "active" },
+    { id: "INV-005", date: "2026-05-21", category: "Strategic marketing", description: "Regional commercial fleet campaign", amount: 13_500, expectedReturnMonths: 8, status: "active" },
+    { id: "INV-006", date: "2026-08-07", category: "Technology", description: "Shop terminals and network", amount: 9_800, expectedReturnMonths: 16, status: "active" },
   ];
 
   investmentSeed.forEach((investment) => {
